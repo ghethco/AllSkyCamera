@@ -1,0 +1,16 @@
+#!/bin/bash
+
+YEAR=`date +%Y`
+MONTH=`date +%m`
+DAY=`date +%d`
+DIR_NAME=${MONTH}-${DAY}-${YEAR}
+
+mkdir -p /home/pi/allsky/${DIR_NAME}
+
+cd /home/pi/src
+python /home/pi/src/allsky_new.py >> /home/pi/src/allsky_new.out
+cd /home/pi/src
+echo "after python, jpgs:"
+ls *.jpg
+cp *.jpg /var/www/html/t1.jpg
+mv *.jpg /home/pi/allsky/${DIR_NAME}
