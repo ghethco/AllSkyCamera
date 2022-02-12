@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# set -x
+
+YEAR=`date +%Y`
+MONTH=`date +%m`
+DAY=`date +%d`
+HOUR=`date +%H`
+MIN=`date +%M`
+
+cd /home/pi/allsky
+DIR_NAME="daily_${MONTH}-${DAY}-${YEAR}"
+echo "DIR_NAME = ${DIR_NAME}"
+rm -rf $DIR_NAME
+mkdir -p $DIR_NAME
+rm -f dailyfiles
+
+echo find /home/pi/allsky -newermt '24 hours ago' -name "*.jpg" > dailyfiles
+find /home/pi/allsky -newermt '24 hours ago' -name "*.jpg" > dailyfiles
+
+echo sort dailyfiles > dailyfiles.sort
+sort dailyfiles > dailyfiles.sort
+
+COUNT=1
+for I in `cat dailyfiles.sort`
+do
+	SEQ_NUM=`printf "%04d" $COUNT`
+#	echo cp $I ${DIR_NAME}/img${SEQ_NUM}.jpg
+	cp $I ${DIR_NAME}/img${SEQ_NUM}.jpg
+	let COUNT++
+done
+
+echo cd $DIR_NAME
+cd $DIR_NAME
+
+echo ffmpeg -i img%04d.jpg ${DIR_NAME}.mp4
+ffmpeg -i img%04d.jpg ${DIR_NAME}.mp4
+
+echo cp ${DIR_NAME}.mp4 /var/www/html/video-file.mp4
+cp ${DIR_NAME}.mp4 /var/www/html/video-file.mp4
+
+# clean up
+
+echo rm -f *.jpg
+rm -f *.jpg
